@@ -127,3 +127,10 @@ async function setSubscription(id, subscription = true) {
     createdAt: row.created_at
   };
 }
+
+module.exports = {
+  createUser,
+  verifyUser,
+  getUserById,
+  setSubscription
+};
