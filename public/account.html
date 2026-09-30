@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>ABDE | حسابي</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:Arial,Tahoma,sans-serif;
+  background:#050505;
+  color:#fff;
+  min-height:100vh;
+}
+header{
+  border-bottom:1px solid #202020;
+  padding:18px 22px;
+}
+.header{
+  max-width:1100px;
+  margin:auto;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.logo{
+  color:#ff1744;
+  font-size:28px;
+  font-weight:900;
+  letter-spacing:2px;
+}
+.back{
+  color:#aaa;
+  text-decoration:none;
+  font-size:14px;
+}
+.back:hover{color:#fff}
+
+main{
+  max-width:850px;
+  margin:auto;
+  padding:70px 20px;
+}
+
+.title{
+  text-align:center;
+  margin-bottom:45px;
+}
+.title small{
+  color:#ff1744;
+  font-weight:bold;
+}
+.title h1{
+  font-size:45px;
+  margin-top:8px;
+}
+
+.card{
+  background:#0d0d0d;
+  border:1px solid #292929;
+  border-radius:24px;
+  padding:30px;
+  margin-bottom:20px;
+}
+
+.profile{
+  display:flex;
+  align-items:center;
+  gap:20px;
+}
+
+.avatar{
+  width:65px;
+  height:65px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#ff1744;
+  font-size:25px;
+  font-weight:bold;
+}
+
+.email{
+  color:#aaa;
+  margin-top:5px;
+  word-break:break-all;
+}
+
+.status{
+  margin-top:30px;
+  padding:22px;
+  border-radius:17px;
+  background:#090909;
+  border:1px solid #292929;
+}
+
+.status-title{
+  color:#888;
+  font-size:13px;
+  margin-bottom:8px;
+}
+
+.status-value{
+  font-size:25px;
+  font-weight:bold;
+}
+
+.premium{
+  color:#ff1744;
+}
+
+.free{
+  color:#aaa;
+}
+
+.actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-top:25px;
+}
+
+button,a.btn{
+  min-height:50px;
+  border-radius:11px;
+  border:1px solid #333;
+  background:#111;
+  color:#fff;
+  font-weight:bold;
+  cursor:pointer;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  text-decoration:none;
+}
+
+.primary{
+  background:#ff1744 !important;
+  border-color:#ff1744 !important;
+}
+
+.message{
+  text-align:center;
+  margin-top:20px;
+  color:#aaa;
+  min-height:24px;
+}
+
+.loading{
+  text-align:center;
+  color:#777;
+  padding:50px;
+}
+
+@media(max-width:600px){
+  main{padding:45px 16px}
+  .title h1{font-size:36px}
+  .profile{align-items:flex-start}
+  .actions{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="header">
+    <div class="logo">ABDE</div>
+    <a class="back" href="/">← الرئيسية</a>
+  </div>
+</header>
+
+<main>
+
+  <div class="title">
+    <small>MY ACCOUNT</small>
+    <h1>حسابي</h1>
+  </div>
+
+  <div id="app">
+    <div class="loading">جاري تحميل الحساب...</div>
+  </div>
+
+</main>
+
+<script>
+
+async function loadAccount(){
+
+  const app = document.getElementById("app");
+
+  try{
+
+    const meResponse = await fetch("/api/me");
+    const me = await meResponse.json();
+
+    if(!me.loggedIn){
+
+      app.innerHTML = `
+        <div class="card" style="text-align:center">
+          <h2>يجب تسجيل الدخول</h2>
+          <p style="color:#777;margin:15px 0 25px">
+            سجّل الدخول للوصول إلى حسابك.
+          </p>
+          <a href="/login.html" class="btn primary">
+            تسجيل الدخول
+          </a>
+        </div>
+      `;
+
+      return;
+    }
+
+    const premiumResponse = await fetch("/api/premium");
+    const premium = await premiumResponse.json();
+
+    const isPremium = premium.allowed === true;
+
+    app.innerHTML = `
+
+      <div class="card">
+
+        <div class="profile">
+
+          <div class="avatar">A</div>
+
+          <div>
+            <h2>مرحبًا بك 👋</h2>
+            <div class="email">${me.user.email}</div>
+          </div>
+
+        </div>
+
+        <div class="status">
+
+          <div class="status-title">
+            حالة الاشتراك
+          </div>
+
+          <div class="status-value ${isPremium ? "premium" : "free"}">
+            ${isPremium ? "⭐ Premium" : "الحساب مجاني"}
+          </div>
+
+        </div>
+
+        <div class="actions">
+
+          ${
+            isPremium
+            ?
+            `
+              <a href="/premium.html" class="btn primary">
+                فتح محتوى Premium
+              </a>
+            `
+            :
+            `
+              <button class="primary" id="subscribe">
+                ⭐ تفعيل Premium تجريبيًا
+              </button>
+            `
+          }
+
+          <button id="logout">
+            تسجيل الخروج
+          </button>
+
+        </div>
+
+        <div class="message" id="message"></div>
+
+      </div>
+
+    `;
+
+    document.getElementById("logout").onclick = async ()=>{
+
+      await fetch("/logout",{
+        method:"POST"
+      });
+
+      location.href="/";
+
+    };
+
+    const subscribe = document.getElementById("subscribe");
+
+    if(subscribe){
+
+      subscribe.onclick = async ()=>{
+
+        subscribe.disabled = true;
+        subscribe.textContent = "جاري التفعيل...";
+
+        const response = await fetch("/api/test-subscribe",{
+          method:"POST"
+        });
+
+        const data = await response.json();
+
+        const message = document.getElementById("message");
+
+        message.textContent = data.message;
+
+        if(data.success){
+
+          setTimeout(()=>{
+            location.reload();
+          },700);
+
+        }else{
+
+          subscribe.disabled = false;
+          subscribe.textContent = "⭐ تفعيل Premium تجريبيًا";
+
+        }
+
+      };
+
+    }
+
+  }catch(error){
+
+    app.innerHTML = `
+      <div class="card" style="text-align:center">
+        حدث خطأ أثناء تحميل الحساب.
+      </div>
+    `;
+
+  }
+
+}
+
+loadAccount();
+
+</script>
+
+</body>
+</html>
