@@ -193,7 +193,7 @@ async function loadAccount(){
 
   try{
 
-    const meResponse = await fetch("https://abde-site.onrender.com/api/me");
+    const meResponse = await fetch("https://abde-site.onrender.com/api/me", { headers: { "Authorization": "Bearer " + localStorage.getItem("abde_token") } });
     const me = await meResponse.json();
 
     if(!me.loggedIn){
@@ -213,7 +213,7 @@ async function loadAccount(){
       return;
     }
 
-    const premiumResponse = await fetch("https://abde-site.onrender.com/api/premium");
+    const premiumResponse = await fetch("https://abde-site.onrender.com/api/premium", { headers: { "Authorization": "Bearer " + localStorage.getItem("abde_token") } });
     const premium = await premiumResponse.json();
 
     const isPremium = premium.allowed === true;
