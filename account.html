@@ -281,7 +281,8 @@ async function loadAccount(){
     document.getElementById("logout").onclick = async ()=>{
 
       await fetch("https://abde-site.onrender.com/logout",{
-        method:"POST"
+        method:"POST",
+          headers: { "Authorization": "Bearer " + localStorage.getItem("abde_token") }
       });
 
       location.href="./";
@@ -298,7 +299,8 @@ async function loadAccount(){
         subscribe.textContent = "جاري التفعيل...";
 
         const response = await fetch("https://abde-site.onrender.com/api/test-subscribe",{
-          method:"POST"
+          method:"POST",
+          headers: { "Authorization": "Bearer " + localStorage.getItem("abde_token") }
         });
 
         const data = await response.json();
