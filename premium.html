@@ -375,7 +375,11 @@ async function checkPremium(){
 
   try{
 
-    const response = await fetch("/api/premium");
+    const response = await fetch("https://abde-site.onrender.com/api/premium", {
+      headers: {
+        "Authorization": "Bearer " + localStorage.getItem("abde_token")
+      }
+    });
     const data = await response.json();
 
     if(!data.allowed){
