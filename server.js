@@ -3,7 +3,7 @@ const path = require("path");
 const jwt = require("jsonwebtoken");
 const JWT_SECRET = process.env.JWT_SECRET;
 
-const { createUser, verifyUser } = require("./users");
+const { createUser, verifyUser, getUserById, setSubscription } = require("./users");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -146,7 +146,7 @@ app.get("/api/me", authenticateToken, (req, res) => {
 });
 
 // ترقية تجريبية إلى Premium
-app.post("/api/test-subscribe", authenticateToken, (req, res) => {
+app.post("/api/test-subscribe", authenticateToken, async (req, res) => {
   if (!req.user.userId) {
     return res.status(401).json({
       success: false,
@@ -154,46 +154,31 @@ app.post("/api/test-subscribe", authenticateToken, (req, res) => {
     });
   }
 
-  const fs = require("fs");
-  const usersFile = path.join(__dirname, "users.json");
+  try {
+    const user = await setSubscription(req.user.userId, true);
 
-  if (!fs.existsSync(usersFile)) {
-    return res.status(404).json({
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "المستخدم غير موجود"
+      });
+    }
+
+    res.json({
+      success: true,
+      message: "تم تفعيل Premium تجريبيًا"
+    });
+  } catch (error) {
+    console.error("Subscription error:", error);
+    res.status(500).json({
       success: false,
-      message: "ملف المستخدمين غير موجود"
+      message: "حدث خطأ في الخادم"
     });
   }
-
-  const users = JSON.parse(
-    fs.readFileSync(usersFile, "utf8")
-  );
-
-  const user = users.find(
-    u => u.id === req.user.userId
-  );
-
-  if (!user) {
-    return res.status(404).json({
-      success: false,
-      message: "المستخدم غير موجود"
-    });
-  }
-
-  user.subscription = true;
-
-  fs.writeFileSync(
-    usersFile,
-    JSON.stringify(users, null, 2)
-  );
-
-  res.json({
-    success: true,
-    message: "تم تفعيل Premium تجريبيًا"
-  });
 });
 
 // حماية محتوى Premium
-app.get("/api/premium", authenticateToken, (req, res) => {
+app.get("/api/premium", authenticateToken, async (req, res) => {
   if (!req.user.userId) {
     return res.status(401).json({
       allowed: false,
@@ -201,29 +186,33 @@ app.get("/api/premium", authenticateToken, (req, res) => {
     });
   }
 
-  const fs = require("fs");
-  const usersFile = path.join(__dirname, "users.json");
+  try {
+    const user = await getUserById(req.user.userId);
 
-  if (!fs.existsSync(usersFile)) {
-    return res.json({ allowed: false });
-  }
+    if (!user) {
+      return res.status(404).json({
+        allowed: false,
+        message: "المستخدم غير موجود"
+      });
+    }
 
-  const users = JSON.parse(fs.readFileSync(usersFile, "utf8"));
+    if (user.subscription !== true) {
+      return res.json({
+        allowed: false,
+        message: "هذا المحتوى متاح للمشتركين فقط"
+      });
+    }
 
-  const user = users.find(
-    u => u.id === req.user.userId
-  );
-
-  if (!user || user.subscription !== true) {
-    return res.json({
+    res.json({
+      allowed: true
+    });
+  } catch (error) {
+    console.error("Premium error:", error);
+    res.status(500).json({
       allowed: false,
-      message: "هذا المحتوى متاح للمشتركين فقط"
+      message: "حدث خطأ في الخادم"
     });
   }
-
-  res.json({
-    allowed: true
-  });
 });
 
 // تسجيل الخروج
