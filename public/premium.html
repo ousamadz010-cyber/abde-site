@@ -375,7 +375,7 @@ async function checkPremium(){
 
   try{
 
-    const response = await fetch("/api/premium");
+    const response = await fetch("https://abde-site.onrender.com/api/premium", {credentials:"include"});
     const data = await response.json();
 
     if(!data.allowed){

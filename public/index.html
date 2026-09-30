@@ -793,7 +793,7 @@ async function updateAccountUI(){
 
   try{
 
-    const response = await fetch("/api/me");
+    const response = await fetch("https://abde-site.onrender.com/api/me", {credentials:"include"});
     const data = await response.json();
 
     if(!data.loggedIn) return;
@@ -812,7 +812,7 @@ async function updateAccountUI(){
 
       e.preventDefault();
 
-      await fetch("/logout", {
+      await fetch("https://abde-site.onrender.com/logout", {credentials:"include",
         method:"POST"
       });
 
