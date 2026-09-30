@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>ABDE | طوّر نفسك</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  font-family:Arial,Tahoma,sans-serif;
+  background:#050505;
+  color:#fff;
+  line-height:1.7;
+}
+
+a{
+  color:inherit;
+  text-decoration:none;
+}
+
+header{
+  position:sticky;
+  top:0;
+  z-index:1000;
+  background:rgba(5,5,5,.88);
+  backdrop-filter:blur(15px);
+  border-bottom:1px solid #1d1d1d;
+}
+
+.header-inner{
+  max-width:1200px;
+  margin:auto;
+  padding:17px 22px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+}
+
+.logo{
+  font-size:30px;
+  font-weight:900;
+  letter-spacing:2px;
+  color:#ff1744;
+}
+
+nav{
+  display:flex;
+  align-items:center;
+  gap:25px;
+}
+
+nav a{
+  color:#bbb;
+  font-size:14px;
+  transition:.25s;
+}
+
+nav a:hover{
+  color:#fff;
+}
+
+.account-email{
+  color:#ff1744;
+  font-size:13px;
+}
+
+.menu{
+  display:none;
+  border:1px solid #333;
+  background:#111;
+  color:white;
+  padding:9px 12px;
+  border-radius:9px;
+  cursor:pointer;
+}
+
+/* HERO */
+
+.hero{
+  min-height:760px;
+  display:flex;
+  align-items:center;
+  position:relative;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 75% 35%,rgba(255,23,68,.22),transparent 30%),
+    radial-gradient(circle at 15% 80%,rgba(255,23,68,.08),transparent 30%),
+    #050505;
+}
+
+.hero:before{
+  content:"";
+  position:absolute;
+  width:500px;
+  height:500px;
+  border:1px solid rgba(255,23,68,.12);
+  border-radius:50%;
+  left:-180px;
+  bottom:-230px;
+}
+
+.hero-inner{
+  width:100%;
+  max-width:1200px;
+  margin:auto;
+  padding:80px 22px;
+  display:grid;
+  grid-template-columns:1.1fr .9fr;
+  gap:70px;
+  align-items:center;
+}
+
+.badge{
+  display:inline-flex;
+  padding:7px 15px;
+  border-radius:50px;
+  border:1px solid rgba(255,23,68,.4);
+  background:rgba(255,23,68,.08);
+  color:#ff4a6b;
+  font-size:13px;
+  margin-bottom:25px;
+}
+
+.hero h1{
+  font-size:clamp(48px,7vw,86px);
+  line-height:1.02;
+  margin-bottom:25px;
+  font-weight:900;
+}
+
+.hero h1 span{
+  color:#ff1744;
+}
+
+.hero-text{
+  max-width:650px;
+  color:#aaa;
+  font-size:18px;
+  line-height:2;
+  margin-bottom:35px;
+}
+
+.buttons{
+  display:flex;
+  flex-wrap:wrap;
+  gap:13px;
+}
+
+.btn{
+  display:inline-flex;
+  justify-content:center;
+  align-items:center;
+  min-height:52px;
+  padding:0 28px;
+  border-radius:12px;
+  font-weight:bold;
+  transition:.25s;
+}
+
+.btn:hover{
+  transform:translateY(-2px);
+}
+
+.primary{
+  background:#ff1744;
+  color:white;
+  box-shadow:0 12px 35px rgba(255,23,68,.22);
+}
+
+.secondary{
+  background:#111;
+  border:1px solid #333;
+  color:white;
+}
+
+.hero-card{
+  position:relative;
+  min-height:430px;
+  border:1px solid #292929;
+  border-radius:30px;
+  background:
+    linear-gradient(145deg,#151515,#090909);
+  box-shadow:0 30px 100px rgba(0,0,0,.6);
+  padding:28px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.hero-glow{
+  position:absolute;
+  width:230px;
+  height:230px;
+  background:#ff1744;
+  filter:blur(120px);
+  opacity:.18;
+}
+
+.abde-symbol{
+  position:relative;
+  text-align:center;
+}
+
+.abde-symbol .big{
+  font-size:110px;
+  font-weight:900;
+  color:#ff1744;
+  letter-spacing:-8px;
+}
+
+.abde-symbol p{
+  color:#777;
+  letter-spacing:6px;
+  font-size:12px;
+}
+
+/* SECTION */
+
+.section{
+  max-width:1200px;
+  margin:auto;
+  padding:100px 22px;
+}
+
+.section-title{
+  text-align:center;
+  margin-bottom:55px;
+}
+
+.section-title .small{
+  color:#ff1744;
+  font-size:13px;
+  font-weight:bold;
+  margin-bottom:10px;
+}
+
+.section-title h2{
+  font-size:clamp(32px,5vw,48px);
+  margin-bottom:12px;
+}
+
+.section-title p{
+  color:#888;
+  max-width:600px;
+  margin:auto;
+}
+
+/* PREMIUM */
+
+.premium-box{
+  position:relative;
+  overflow:hidden;
+  border:1px solid rgba(255,23,68,.35);
+  border-radius:28px;
+  padding:45px;
+  background:
+    radial-gradient(circle at 90% 20%,rgba(255,23,68,.16),transparent 30%),
+    #0d0d0d;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:40px;
+}
+
+.premium-box h3{
+  font-size:34px;
+  margin-bottom:15px;
+}
+
+.premium-box .description{
+  color:#999;
+  margin-bottom:25px;
+}
+
+.features{
+  list-style:none;
+  display:grid;
+  gap:13px;
+}
+
+.features li{
+  color:#ccc;
+}
+
+.features li:before{
+  content:"✓";
+  color:#ff1744;
+  font-weight:bold;
+  margin-left:10px;
+}
+
+.price-box{
+  background:#080808;
+  border:1px solid #292929;
+  border-radius:22px;
+  padding:35px;
+  text-align:center;
+}
+
+.price-label{
+  color:#777;
+  font-size:13px;
+}
+
+.price{
+  font-size:45px;
+  font-weight:900;
+  color:#ff1744;
+  margin:12px 0;
+}
+
+.coming{
+  color:#777;
+  font-size:13px;
+  margin-bottom:22px;
+}
+
+/* CONTENT */
+
+.content-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:20px;
+}
+
+.content-card{
+  background:#0d0d0d;
+  border:1px solid #222;
+  border-radius:20px;
+  overflow:hidden;
+  transition:.3s;
+}
+
+.content-card:hover{
+  transform:translateY(-5px);
+  border-color:#444;
+}
+
+.card-image{
+  height:180px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:
+    radial-gradient(circle at center,rgba(255,23,68,.2),transparent 60%),
+    #111;
+  font-size:50px;
+}
+
+.card-body{
+  padding:23px;
+}
+
+.card-body h3{
+  margin-bottom:9px;
+}
+
+.card-body p{
+  color:#777;
+  font-size:14px;
+}
+
+/* FEATURES */
+
+.feature-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:20px;
+}
+
+.feature{
+  padding:30px;
+  background:#0d0d0d;
+  border:1px solid #222;
+  border-radius:20px;
+}
+
+.icon{
+  width:48px;
+  height:48px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(255,23,68,.1);
+  border-radius:13px;
+  color:#ff1744;
+  font-size:22px;
+  margin-bottom:20px;
+}
+
+.feature h3{
+  margin-bottom:10px;
+}
+
+.feature p{
+  color:#777;
+  font-size:14px;
+}
+
+/* CTA */
+
+.cta{
+  max-width:1200px;
+  margin:0 auto 90px;
+  padding:0 22px;
+}
+
+.cta-box{
+  text-align:center;
+  padding:75px 25px;
+  border-radius:28px;
+  background:
+    radial-gradient(circle at center,rgba(255,23,68,.16),transparent 55%),
+    #0c0c0c;
+  border:1px solid #292929;
+}
+
+.cta-box h2{
+  font-size:42px;
+  margin-bottom:15px;
+}
+
+.cta-box p{
+  color:#888;
+  margin-bottom:28px;
+}
+
+/* FOOTER */
+
+footer{
+  border-top:1px solid #1b1b1b;
+  padding:35px 22px;
+  text-align:center;
+  color:#555;
+  font-size:13px;
+}
+
+@media(max-width:850px){
+
+  .menu{
+    display:block;
+  }
+
+  nav{
+    display:none;
+    position:absolute;
+    top:70px;
+    right:15px;
+    left:15px;
+    padding:20px;
+    background:#0b0b0b;
+    border:1px solid #292929;
+    border-radius:15px;
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  nav.open{
+    display:flex;
+  }
+
+  nav a{
+    padding:10px;
+  }
+
+  .hero-inner{
+    grid-template-columns:1fr;
+    text-align:center;
+  }
+
+  .hero-text{
+    margin-left:auto;
+    margin-right:auto;
+  }
+
+  .buttons{
+    justify-content:center;
+  }
+
+  .hero-card{
+    min-height:300px;
+  }
+
+  .premium-box{
+    grid-template-columns:1fr;
+  }
+
+  .content-grid,
+  .feature-grid{
+    grid-template-columns:1fr;
+  }
+}
+
+@media(max-width:500px){
+
+  .header-inner{
+    padding:14px 16px;
+  }
+
+  .logo{
+    font-size:25px;
+  }
+
+  .hero{
+    min-height:auto;
+  }
+
+  .hero-inner{
+    padding:75px 18px;
+  }
+
+  .hero h1{
+    font-size:48px;
+  }
+
+  .hero-text{
+    font-size:16px;
+  }
+
+  .hero-card{
+    min-height:250px;
+  }
+
+  .abde-symbol .big{
+    font-size:80px;
+  }
+
+  .section{
+    padding:75px 18px;
+  }
+
+  .premium-box{
+    padding:25px;
+  }
+
+  .cta{
+    padding:0 18px;
+  }
+
+  .cta-box{
+    padding:55px 20px;
+  }
+
+  .cta-box h2{
+    font-size:32px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="header-inner">
+
+    <a href="/" class="logo">ABDE</a>
+
+    <button class="menu" id="menu">☰</button>
+
+    <nav id="nav">
+      <a href="/">الرئيسية</a>
+      <a href="#premium">Premium</a>
+      <a href="#content">المحتوى</a>
+      <a href="#features">المميزات</a>
+      <a href="/login.html">تسجيل الدخول</a>
+      <a href="/register.html">إنشاء حساب</a>
+    </nav>
+
+  </div>
+</header>
+
+<main>
+
+<section class="hero">
+
+  <div class="hero-inner">
+
+    <div>
+
+      <div class="badge">منصة ABDE الرقمية</div>
+
+      <h1>
+        طوّر نفسك.<br>
+        <span>غيّر حياتك.</span>
+      </h1>
+
+      <p class="hero-text">
+        مكان واحد للمحتوى الحصري، التطوير الشخصي واللياقة.
+        أنشئ حسابك وابدأ ببناء نسخة أفضل من نفسك.
+      </p>
+
+      <div class="buttons">
+        <a href="/register.html" class="btn primary">
+          ابدأ الآن
+        </a>
+
+        <a href="#premium" class="btn secondary">
+          اكتشف Premium
+        </a>
+      </div>
+
+    </div>
+
+    <div class="hero-card">
+      <div class="hero-glow"></div>
+
+      <div class="abde-symbol">
+        <div class="big">ABDE</div>
+        <p>DISCIPLINE • GROWTH • FITNESS</p>
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+<section class="section" id="premium">
+
+  <div class="section-title">
+    <div class="small">PREMIUM</div>
+    <h2>محتوى أكثر. تطور أكثر.</h2>
+    <p>
+      تجربة مخصصة للمشتركين مع محتوى حصري يتم تطويره باستمرار.
+    </p>
+  </div>
+
+  <div class="premium-box">
+
+    <div>
+      <h3>ABDE Premium</h3>
+
+      <p class="description">
+        افتح الوصول إلى المحتوى المخصص للمشتركين
+        واستفد من تجربة ABDE الكاملة.
+      </p>
+
+      <ul class="features">
+        <li>محتوى حصري</li>
+        <li>محتوى خاص بالمشتركين</li>
+        <li>تجربة بدون تعقيد</li>
+        <li>تحديثات مستقبلية للمنصة</li>
+      </ul>
+    </div>
+
+    <div class="price-box">
+
+      <div class="price-label">السعر</div>
+
+      <div class="price">قريبًا</div>
+
+      <div class="coming">
+        سيتم تحديد سعر الاشتراك لاحقًا
+      </div>
+
+      <a href="/register.html" class="btn primary">
+        إنشاء حساب
+      </a>
+
+    </div>
+
+  </div>
+
+</section>
+
+<section class="section" id="content">
+
+  <div class="section-title">
+    <div class="small">CONTENT</div>
+    <h2>استكشف المحتوى</h2>
+    <p>
+      مجموعة من المجالات التي ستجدها داخل منصة ABDE.
+    </p>
+  </div>
+
+  <div class="content-grid">
+
+    <div class="content-card">
+      <div class="card-image">⚡</div>
+      <div class="card-body">
+        <h3>تطوير الذات</h3>
+        <p>
+          محتوى يساعدك على بناء العادات والانضباط وتحسين يومك.
+        </p>
+      </div>
+    </div>
+
+    <div class="content-card">
+      <div class="card-image">🏋️</div>
+      <div class="card-body">
+        <h3>اللياقة</h3>
+        <p>
+          محتوى رياضي وخطط وأفكار تساعدك على تطوير أدائك.
+        </p>
+      </div>
+    </div>
+
+    <div class="content-card">
+      <div class="card-image">🔒</div>
+      <div class="card-body">
+        <h3>محتوى Premium</h3>
+        <p>
+          محتوى خاص سيتم فتحه للمشتركين بعد تفعيل الاشتراك.
+        </p>
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+<section class="section" id="features">
+
+  <div class="section-title">
+    <div class="small">WHY ABDE</div>
+    <h2>لماذا ABDE؟</h2>
+  </div>
+
+  <div class="feature-grid">
+
+    <div class="feature">
+      <div class="icon">⚡</div>
+      <h3>بسيط وسريع</h3>
+      <p>
+        واجهة مصممة لتصل إلى ما تحتاجه بسرعة وبدون تعقيد.
+      </p>
+    </div>
+
+    <div class="feature">
+      <div class="icon">🎯</div>
+      <h3>ركز على هدفك</h3>
+      <p>
+        محتوى منظم حول التطوير الشخصي واللياقة والنمو.
+      </p>
+    </div>
+
+    <div class="feature">
+      <div class="icon">🔐</div>
+      <h3>منطقة خاصة</h3>
+      <p>
+        المحتوى المخصص للمشتركين محمي خلف نظام الحساب والاشتراك.
+      </p>
+    </div>
+
+  </div>
+
+</section>
+
+<section class="cta">
+
+  <div class="cta-box">
+
+    <h2>جاهز تبدأ؟</h2>
+
+    <p>
+      أنشئ حسابك وابدأ رحلتك مع ABDE.
+    </p>
+
+    <a href="/register.html" class="btn primary">
+      إنشاء حساب
+    </a>
+
+  </div>
+
+</section>
+
+</main>
+
+<footer>
+  © 2026 ABDE — جميع الحقوق محفوظة
+</footer>
+
+<script>
+
+const menu = document.getElementById("menu");
+const nav = document.getElementById("nav");
+
+menu.addEventListener("click", () => {
+  nav.classList.toggle("open");
+});
+
+async function updateAccountUI(){
+
+  try{
+
+    const response = await fetch("/api/me");
+    const data = await response.json();
+
+    if(!data.loggedIn) return;
+
+    nav.innerHTML = `
+      <a href="/">الرئيسية</a>
+      <a href="#premium">Premium</a>
+      <a href="#content">المحتوى</a>
+      <a href="#features">المميزات</a>
+      <a href="/account.html">حسابي</a>
+      <span class="account-email">${data.user.email}</span>
+      <a href="#" id="logout">تسجيل الخروج</a>
+    `;
+
+    document.getElementById("logout").addEventListener("click", async (e)=>{
+
+      e.preventDefault();
+
+      await fetch("/logout", {
+        method:"POST"
+      });
+
+      location.reload();
+
+    });
+
+  }catch(error){
+
+    console.log("Account check failed");
+
+  }
+
+}
+
+updateAccountUI();
+
+</script>
+
+</body>
+</html>
