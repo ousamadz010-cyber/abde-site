@@ -175,6 +175,7 @@
         const data = await response.json();
 
         if (data.success) {
+          localStorage.setItem("abde_token", data.token);
           message.textContent = "تم تسجيل الدخول بنجاح ✓";
 
           setTimeout(() => {
