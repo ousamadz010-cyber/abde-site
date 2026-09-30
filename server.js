@@ -1,6 +1,7 @@
 const express = require("express");
 const path = require("path");
-const session = require("express-session");
+const jwt = require("jsonwebtoken");
+const JWT_SECRET = process.env.JWT_SECRET;
 
 const { createUser, verifyUser } = require("./users");
 
@@ -13,25 +14,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "https://ousamadz010-cyber.github.io");
   res.setHeader("Access-Control-Allow-Credentials", "true");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
   res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
   if (req.method === "OPTIONS") return res.sendStatus(204);
   next();
 });
-
-app.use(
-  session({
-    secret: "my-subscription-site-secret-change-this-later",
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-      maxAge: 7 * 24 * 60 * 60 * 1000
-    }
-  })
-);
 
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -60,12 +47,17 @@ app.post("/register", async (req, res) => {
 
     const user = await createUser(email, password);
 
-    req.session.userId = user.id;
-    req.session.email = user.email;
+
+    const token = jwt.sign(
+      { userId: user.id, email: user.email },
+      JWT_SECRET,
+      { expiresIn: "7d" }
+    );
 
     res.json({
       success: true,
       message: "تم إنشاء الحساب بنجاح",
+      token,
       user: {
         id: user.id,
         email: user.email,
@@ -101,12 +93,17 @@ app.post("/login", async (req, res) => {
       });
     }
 
-    req.session.userId = user.id;
-    req.session.email = user.email;
+
+    const token = jwt.sign(
+      { userId: user.id, email: user.email },
+      JWT_SECRET,
+      { expiresIn: "7d" }
+    );
 
     res.json({
       success: true,
       message: "تم تسجيل الدخول بنجاح",
+      token,
       user: {
         id: user.id,
         email: user.email,
@@ -121,26 +118,36 @@ app.post("/login", async (req, res) => {
   }
 });
 
-// المستخدم الحالي
-app.get("/api/me", (req, res) => {
-  if (!req.session.userId) {
-    return res.json({
-      loggedIn: false
-    });
+function authenticateToken(req, res, next) {
+  const auth = req.headers.authorization || "";
+  const token = auth.startsWith("Bearer ") ? auth.slice(7) : null;
+
+  if (!token) {
+    return res.status(401).json({ loggedIn: false, message: "يجب تسجيل الدخول" });
   }
 
+  try {
+    req.user = jwt.verify(token, JWT_SECRET);
+    next();
+  } catch (error) {
+    return res.status(401).json({ loggedIn: false, message: "جلسة الدخول منتهية" });
+  }
+}
+
+// المستخدم الحالي
+app.get("/api/me", authenticateToken, (req, res) => {
   res.json({
     loggedIn: true,
     user: {
-      id: req.session.userId,
-      email: req.session.email
+      id: req.user.userId,
+      email: req.user.email
     }
   });
 });
 
 // ترقية تجريبية إلى Premium
-app.post("/api/test-subscribe", (req, res) => {
-  if (!req.session.userId) {
+app.post("/api/test-subscribe", authenticateToken, (req, res) => {
+  if (!req.user.userId) {
     return res.status(401).json({
       success: false,
       message: "يجب تسجيل الدخول"
@@ -162,7 +169,7 @@ app.post("/api/test-subscribe", (req, res) => {
   );
 
   const user = users.find(
-    u => u.id === req.session.userId
+    u => u.id === req.user.userId
   );
 
   if (!user) {
@@ -186,8 +193,8 @@ app.post("/api/test-subscribe", (req, res) => {
 });
 
 // حماية محتوى Premium
-app.get("/api/premium", (req, res) => {
-  if (!req.session.userId) {
+app.get("/api/premium", authenticateToken, (req, res) => {
+  if (!req.user.userId) {
     return res.status(401).json({
       allowed: false,
       message: "يجب تسجيل الدخول"
@@ -204,7 +211,7 @@ app.get("/api/premium", (req, res) => {
   const users = JSON.parse(fs.readFileSync(usersFile, "utf8"));
 
   const user = users.find(
-    u => u.id === req.session.userId
+    u => u.id === req.user.userId
   );
 
   if (!user || user.subscription !== true) {
@@ -221,12 +228,7 @@ app.get("/api/premium", (req, res) => {
 
 // تسجيل الخروج
 app.post("/logout", (req, res) => {
-  req.session.destroy(() => {
-    res.json({
-      success: true,
-      message: "تم تسجيل الخروج"
-    });
-  });
+  res.json({ success: true, message: "تم تسجيل الخروج" });
 });
 
 app.listen(PORT, "0.0.0.0", () => {

@@ -193,7 +193,7 @@ async function loadAccount(){
 
   try{
 
-    const meResponse = await fetch("https://abde-site.onrender.com/api/me", {credentials:"include"});
+    const meResponse = await fetch("https://abde-site.onrender.com/api/me", {headers: {Authorization: "Bearer " + localStorage.getItem("abde_token")}});
     const me = await meResponse.json();
 
     if(!me.loggedIn){
@@ -213,7 +213,7 @@ async function loadAccount(){
       return;
     }
 
-    const premiumResponse = await fetch("https://abde-site.onrender.com/api/premium", {credentials:"include"});
+    const premiumResponse = await fetch("https://abde-site.onrender.com/api/premium", {headers: {Authorization: "Bearer " + localStorage.getItem("abde_token")}});
     const premium = await premiumResponse.json();
 
     const isPremium = premium.allowed === true;
@@ -275,14 +275,9 @@ async function loadAccount(){
 
     `;
 
-    document.getElementById("logout").onclick = async ()=>{
-
-      await fetch("https://abde-site.onrender.com/logout",{credentials:"include",
-        method:"POST"
-      });
-
+    document.getElementById("logout").onclick = ()=>{
+      localStorage.removeItem("abde_token");
       location.href="./";
-
     };
 
     const subscribe = document.getElementById("subscribe");
@@ -294,7 +289,7 @@ async function loadAccount(){
         subscribe.disabled = true;
         subscribe.textContent = "جاري التفعيل...";
 
-        const response = await fetch("https://abde-site.onrender.com/api/test-subscribe",{credentials:"include",
+        const response = await fetch("https://abde-site.onrender.com/api/test-subscribe",{headers:{Authorization:"Bearer " + localStorage.getItem("abde_token")},
           method:"POST"
         });
 

@@ -793,7 +793,7 @@ async function updateAccountUI(){
 
   try{
 
-    const response = await fetch("https://abde-site.onrender.com/api/me", {credentials:"include"});
+    const response = await fetch("https://abde-site.onrender.com/api/me", {headers: {Authorization: "Bearer " + localStorage.getItem("abde_token")}});
     const data = await response.json();
 
     if(!data.loggedIn) return;
@@ -808,13 +808,9 @@ async function updateAccountUI(){
       <a href="#" id="logout">تسجيل الخروج</a>
     `;
 
-    document.getElementById("logout").addEventListener("click", async (e)=>{
-
+    document.getElementById("logout").addEventListener("click", (e)=>{
       e.preventDefault();
-
-      await fetch("https://abde-site.onrender.com/logout", {credentials:"include",
-        method:"POST"
-      });
+      localStorage.removeItem("abde_token");
 
       location.reload();
 
