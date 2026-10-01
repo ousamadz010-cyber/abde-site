@@ -1,9 +1,14 @@
 const express = require("express");
 const path = require("path");
 const jwt = require("jsonwebtoken");
+const { OAuth2Client } = require("google-auth-library");
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+const GOOGLE_REDIRECT_URI = "https://abde-site.onrender.com/auth/google/callback";
+const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI);
 const JWT_SECRET = process.env.JWT_SECRET;
 
-const { createUser, verifyUser, getUserById, setSubscription } = require("./users");
+const { createUser, verifyUser, getUserById, setSubscription, getUserByGoogleId, createGoogleUser } = require("./users");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -24,6 +29,53 @@ app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+// Google OAuth
+app.get("/auth/google", (req, res) => {
+  const url = googleClient.generateAuthUrl({
+    access_type: "offline",
+    scope: ["openid", "email", "profile"],
+    prompt: "select_account"
+  });
+  res.redirect(url);
+});
+
+app.get("/auth/google/callback", async (req, res) => {
+  try {
+    const { code } = req.query;
+    if (!code) return res.status(400).send("Google authorization code missing");
+
+    const { tokens } = await googleClient.getToken(code);
+    googleClient.setCredentials(tokens);
+
+    const ticket = await googleClient.verifyIdToken({
+      idToken: tokens.id_token,
+      audience: GOOGLE_CLIENT_ID
+    });
+
+    const payload = ticket.getPayload();
+    if (!payload || !payload.sub || !payload.email) {
+      return res.status(400).send("Google account information is incomplete");
+    }
+
+    let user = await getUserByGoogleId(payload.sub);
+    if (!user) {
+      user = await createGoogleUser(payload.sub, payload.email);
+    }
+
+    const token = jwt.sign(
+      { userId: user.id, email: user.email },
+      JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    const frontend = "https://ousamadz010-cyber.github.io/abde-site/account.html";
+    res.redirect(frontend + "?token=" + encodeURIComponent(token));
+  } catch (error) {
+    console.error("Google OAuth error:", error);
+    res.status(500).send("Google login failed");
+  }
 });
 
 // إنشاء حساب

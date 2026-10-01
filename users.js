@@ -1,14 +1,21 @@
 const bcrypt = require("bcrypt");
 const pool = require("./db");
 
+async function migrateUsersTable() {
+  await pool.query("ALTER TABLE users ADD COLUMN IF NOT EXISTS google_id TEXT UNIQUE");
+  await pool.query("ALTER TABLE users ALTER COLUMN password_hash DROP NOT NULL");
+}
+
 async function ensureUsersTable() {
+  await migrateUsersTable();
   await pool.query(`
     CREATE TABLE IF NOT EXISTS users (
       id TEXT PRIMARY KEY,
       email TEXT UNIQUE NOT NULL,
-      password_hash TEXT NOT NULL,
+      password_hash TEXT,
       subscription BOOLEAN NOT NULL DEFAULT FALSE,
-      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      google_id TEXT UNIQUE
     )
   `);
 }
